@@ -44,7 +44,7 @@ const (
 //
 // 加长本身是安全的：曾经把它从 80 加到 102 来试 inner[79] 会不会复活，结论是不会
 // —— 模型选择完全由 x-goog-ext-525001261-jspb header 决定，长度不影响。
-const innerSlots = 97
+const innerSlots = 99
 
 // inner[80] / 模型 header 下标 15 的取值：1=普通，2=扩展思考。
 //
@@ -676,6 +676,18 @@ func streamGenerateOnce(prompt, latest string, mc ModelConfig, pending []pending
 	inner[96] = 0
 	if tw != thinkingNormal {
 		inner[96] = 1
+	}
+	// LOCAL PATCH (2026-11-09): match the browser's Argon processSession capture
+	// (protobuf field N == inner[N-1]); BotGuard token slots inner[3]/[4] left empty.
+	if mc.Mode == 8 {
+		inner[6] = []interface{}{1}
+		inner[30] = []interface{}{}
+		inner[49] = 40
+		inner[68] = 2
+		inner[83] = 1
+		inner[91] = 1
+		inner[96] = 1
+		inner[98] = 1
 	}
 	// 媒体工具开关。填了服务端就换后端模型出图/出乐（响应里带产物引用，字节要另取）。
 	if mc.Tool > 0 {
