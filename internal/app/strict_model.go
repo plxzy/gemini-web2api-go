@@ -167,5 +167,9 @@ func modelDowngraded(mc ModelConfig, reported string) bool {
 	if want == "" || got == "" {
 		return false
 	}
+	// Local patch: AI Pro accounts serve the 3.6 Flash id as "3.8 Flash" (an upgrade).
+	if want == "3.6 flash" && (got == "3.8 flash" || strings.HasPrefix(got, "3.8 flash ")) {
+		return false
+	}
 	return got != want && !strings.HasPrefix(got, want+" ")
 }
